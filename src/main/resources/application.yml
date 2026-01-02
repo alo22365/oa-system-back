@@ -2,17 +2,19 @@ server:
   port: 8080
   servlet:
     context-path: /api
+  error:
+    include-message: always
+    include-stacktrace: on_param
 
 spring:
   application:
     name: oa-system
 
-  # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/oa_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://172.20.10.10:3306/oa_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: your_password
+    password: 1qazXSW@CDE#
     druid:
       initial-size: 5
       min-idle: 5
@@ -34,36 +36,12 @@ spring:
         wall:
           enabled: true
 
-  # Redis配置
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password:
-      database: 0
-      timeout: 10000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-wait: -1ms
-          max-idle: 8
-          min-idle: 0
-
-  # 文件上传配置
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 100MB
-      max-request-size: 100MB
-
-  # Jackson配置
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
     serialization:
       write-dates-as-timestamps: false
 
-# MyBatis-Plus配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.oa.*.entity
@@ -78,46 +56,17 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-# JWT配置
 jwt:
-  secret: your-secret-key-must-be-at-least-256-bits-long-for-hs512
-  expiration: 86400000 # 24小时,单位毫秒
+  secret: 9a3b7c1d5e8f2a4c6b9d0f1e3a5c7b8d0f2e4a6c8b1d3f5a7c9e0b2d4f6a8c1e
+  expiration: 86400000
 
-# 文件存储配置
-file:
-  upload-path: /data/upload
-  access-path: /files/**
-
-# MinIO配置
-minio:
-  endpoint: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
-  bucket-name: oa-system
-
-# 日志配置
 logging:
   level:
     com.oa: debug
     org.springframework: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
-  file:
-    name: logs/oa-system.log
-    max-size: 100MB
-    max-history: 30
 
-# Actuator配置
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
-
-# Swagger配置
 springdoc:
   api-docs:
     enabled: true

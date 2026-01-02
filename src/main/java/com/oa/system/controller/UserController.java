@@ -13,12 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-/**
- * 用户管理控制器
- */
-@Tag(name = "用户管理")
+@Tag(name = "User")
 @RestController
-@RequestMapping("/api/v1/system/users")
+@RequestMapping("/v1/system/users")
 public class UserController {
 
     private final UserService userService;
@@ -27,7 +24,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "用户列表")
+    @Operation(summary = "User list")
     @GetMapping
     @PreAuthorize("hasAuthority('system:user:list')")
     public Result<IPage<User>> list(UserQueryDTO queryDTO) {
@@ -35,15 +32,15 @@ public class UserController {
         return Result.success(page);
     }
 
-    @Operation(summary = "用户详情")
+    @Operation(summary = "User detail")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user:query')")
     public Result<User> getById(@PathVariable Long id) {
-        User user = userService.getById(id);
+        User user = userService.getUserDetail(id);
         return Result.success(user);
     }
 
-    @Operation(summary = "新增用户")
+    @Operation(summary = "Create user")
     @PostMapping
     @PreAuthorize("hasAuthority('system:user:add')")
     public Result<Void> add(@Valid @RequestBody UserDTO userDTO) {
@@ -51,7 +48,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "修改用户")
+    @Operation(summary = "Update user")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user:edit')")
     public Result<Void> update(@PathVariable Long id,
@@ -60,7 +57,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "删除用户")
+    @Operation(summary = "Delete users")
     @DeleteMapping("/{ids}")
     @PreAuthorize("hasAuthority('system:user:remove')")
     public Result<Void> delete(@PathVariable List<Long> ids) {
@@ -68,7 +65,7 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "重置密码")
+    @Operation(summary = "Reset password")
     @PutMapping("/{id}/reset-password")
     @PreAuthorize("hasAuthority('system:user:resetPwd')")
     public Result<Void> resetPassword(@PathVariable Long id) {
@@ -76,12 +73,21 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "修改用户状态")
+    @Operation(summary = "Change status")
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAuthority('system:user:edit')")
     public Result<Void> changeStatus(@PathVariable Long id,
                                      @RequestParam Integer status) {
         userService.changeStatus(id, status);
+        return Result.success();
+    }
+
+    @Operation(summary = "Bind roles")
+    @PutMapping("/{id}/roles")
+    @PreAuthorize("hasAuthority('system:user:edit')")
+    public Result<Void> bindRoles(@PathVariable Long id,
+                                  @RequestBody List<Long> roleIds) {
+        userService.updateUserRoles(id, roleIds);
         return Result.success();
     }
 }

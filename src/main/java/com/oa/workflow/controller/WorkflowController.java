@@ -14,12 +14,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 工作流控制器
- */
-@Tag(name = "工作流管理")
+@Tag(name = "Workflow")
 @RestController
-@RequestMapping("/api/v1/workflow")
+@RequestMapping("/v1/workflow")
 public class WorkflowController {
 
     private final WorkflowService workflowService;
@@ -28,42 +25,42 @@ public class WorkflowController {
         this.workflowService = workflowService;
     }
 
-    @Operation(summary = "发起流程")
+    @Operation(summary = "Start instance")
     @PostMapping("/instance")
     public Result<Long> startInstance(@Valid @RequestBody InstanceDTO instanceDTO) {
         Long instanceId = workflowService.startInstance(instanceDTO);
         return Result.success(instanceId);
     }
 
-    @Operation(summary = "我的申请")
+    @Operation(summary = "My instances")
     @GetMapping("/my-instances")
     public Result<IPage<WorkflowInstance>> myInstances(TaskQueryDTO queryDTO) {
         IPage<WorkflowInstance> page = workflowService.selectMyInstances(queryDTO);
         return Result.success(page);
     }
 
-    @Operation(summary = "流程详情")
+    @Operation(summary = "Instance detail")
     @GetMapping("/instance/{id}")
     public Result<InstanceDetailVO> getInstanceDetail(@PathVariable Long id) {
         InstanceDetailVO detail = workflowService.getInstanceDetail(id);
         return Result.success(detail);
     }
 
-    @Operation(summary = "待办任务")
+    @Operation(summary = "Todo tasks")
     @GetMapping("/tasks/todo")
     public Result<IPage<WorkflowTask>> todoTasks(TaskQueryDTO queryDTO) {
         IPage<WorkflowTask> page = workflowService.selectTodoTasks(queryDTO);
         return Result.success(page);
     }
 
-    @Operation(summary = "已办任务")
+    @Operation(summary = "Done tasks")
     @GetMapping("/tasks/done")
     public Result<IPage<WorkflowTask>> doneTasks(TaskQueryDTO queryDTO) {
         IPage<WorkflowTask> page = workflowService.selectDoneTasks(queryDTO);
         return Result.success(page);
     }
 
-    @Operation(summary = "审批任务")
+    @Operation(summary = "Approve task")
     @PostMapping("/task/{taskId}/approve")
     public Result<Void> approve(@PathVariable Long taskId,
                                 @Valid @RequestBody ApprovalDTO approvalDTO) {
@@ -71,14 +68,14 @@ public class WorkflowController {
         return Result.success();
     }
 
-    @Operation(summary = "撤销流程")
+    @Operation(summary = "Cancel instance")
     @PostMapping("/instance/{id}/cancel")
     public Result<Void> cancelInstance(@PathVariable Long id) {
         workflowService.cancelInstance(id);
         return Result.success();
     }
 
-    @Operation(summary = "流程统计")
+    @Operation(summary = "Statistics")
     @GetMapping("/statistics")
     public Result<?> statistics() {
         return Result.success(workflowService.getStatistics());

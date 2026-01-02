@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 
@@ -21,6 +22,10 @@ public class JwtUtil {
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    private SecretKey getSigningSecretKey() {
+        return (SecretKey) getSigningKey();
     }
 
     /**
@@ -42,10 +47,10 @@ public class JwtUtil {
      * 从Token中获取用户名
      */
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningSecretKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getBody();
 
         return claims.getSubject();
@@ -56,10 +61,10 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Jwts.parser()
+                    .verifyWith(getSigningSecretKey())
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -70,10 +75,10 @@ public class JwtUtil {
      * 获取Token过期时间
      */
     public Date getExpirationFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningSecretKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getBody();
 
         return claims.getExpiration();
